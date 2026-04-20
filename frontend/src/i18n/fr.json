@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "code": "fr",
+    "name": "Français",
+    "dir": "ltr",
+    "primary": false
+  },
+  "app": {
+    "title": "Zidnni",
+    "subtitle": "Un assistant arabophone d'abord — au service de la préservation de l'intellect",
+    "tagline": "« Seigneur, accroîs-moi en science »"
+  },
+  "chat": {
+    "placeholder": "Pose ta question...",
+    "send": "Envoyer",
+    "thinking": "Réflexion en cours...",
+    "empty": "Commence la conversation — en arabe, français ou anglais.",
+    "error": "Connexion impossible. Réessaie.",
+    "driftRefused": "Réponse refusée : elle ne correspondait pas à l'identité de Zidnni."
+  },
+  "lang": {
+    "switch": "Langue",
+    "ar": "العربية",
+    "fr": "Français",
+    "en": "English"
+  }
+}

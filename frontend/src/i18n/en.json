@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "code": "en",
+    "name": "English",
+    "dir": "ltr",
+    "primary": false
+  },
+  "app": {
+    "title": "Zidnni",
+    "subtitle": "An Arabic-first assistant — in service of the intellect",
+    "tagline": "\"My Lord, increase me in knowledge.\""
+  },
+  "chat": {
+    "placeholder": "Ask your question...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "empty": "Start the conversation — in Arabic, French, or English.",
+    "error": "Could not connect. Try again.",
+    "driftRefused": "Reply refused: it did not match Zidnni's identity."
+  },
+  "lang": {
+    "switch": "Language",
+    "ar": "العربية",
+    "fr": "Français",
+    "en": "English"
+  }
+}
