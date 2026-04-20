@@ -1,0 +1,34 @@
+{
+  "name": "zidnni",
+  "version": "0.1.0",
+  "description": "Arabic-first AI assistant — intelligence layer of the محيي الدين ecosystem, serving حفظ العقل",
+  "type": "module",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "test": "node --test backend/**/*.test.js"
+  },
+  "keywords": [
+    "arabic",
+    "ai",
+    "qwen3",
+    "nouadhibou",
+    "mauritania",
+    "hifz-al-aql"
+  ],
+  "author": "محيي الدين",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "ws": "^8.18.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
