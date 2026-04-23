@@ -36,3 +36,8 @@ coverage/
 
 # Local conversation dumps (Phase 1 in-memory store may snapshot here)
 backend/.memory/
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal

@@ -20,6 +20,7 @@
 import express from 'express';
 import * as memory from '../services/memory.js';
 import { streamChat } from '../services/qwen.js';
+import { incrementMessages } from '../models/Usage.js';
 
 const router = express.Router();
 
@@ -76,6 +77,7 @@ router.post('/', async (req, res) => {
   }
 
   memory.append(conversationId, { role: 'assistant', content: fullReply });
+  if (req.user) incrementMessages(req.user.id);
   writeEvent('done', { ok: true });
   res.end();
 });

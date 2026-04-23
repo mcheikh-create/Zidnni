@@ -1,11 +1,10 @@
-// Zidnni/frontend/src/App.jsx
+// frontend/src/App.jsx
 // Maqasid: حفظ العقل
-//
-// Root component. Holds language + conversationId state and applies the
-// RTL/LTR direction to <html> whenever the language changes. Arabic is the
-// default.
-
 import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Landing from './pages/Landing.jsx';
+import Auth from './pages/Auth.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 import Chat from './components/Chat.jsx';
 import LanguageSwitch from './components/LanguageSwitch.jsx';
 import ar from './i18n/ar.json';
@@ -14,7 +13,7 @@ import en from './i18n/en.json';
 
 const DICTS = { ar, fr, en };
 
-export default function App() {
+function ChatShell() {
   const [lang, setLang] = useState('ar');
   const [conversationId, setConversationId] = useState(null);
   const t = DICTS[lang];
@@ -41,7 +40,6 @@ export default function App() {
         </div>
         <LanguageSwitch lang={lang} onChange={setLang} t={t} />
       </header>
-
       <main className="app-main">
         {conversationId ? (
           <Chat conversationId={conversationId} lang={lang} t={t} />
@@ -50,5 +48,24 @@ export default function App() {
         )}
       </main>
     </div>
+  );
+}
+
+function RequireAuth({ children }) {
+  const token = localStorage.getItem('zidnni_token');
+  return token ? children : <Navigate to="/auth" replace />;
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+        <Route path="/chat" element={<RequireAuth><ChatShell /></RequireAuth>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

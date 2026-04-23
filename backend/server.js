@@ -20,6 +20,9 @@ import { WebSocketServer } from 'ws';
 import identityMiddleware from './middleware/identity.js';
 import chatRoute from './routes/chat.js';
 import authRoute from './routes/auth.js';
+import subscriptionRoute from './routes/subscription.js';
+import userRoute from './routes/user.js';
+import './db.js'; // trigger migrations on startup
 
 const PORT = Number(process.env.PORT) || 3001;
 
@@ -39,6 +42,8 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/auth', authRoute);
 app.use('/api/chat', chatRoute);
+app.use('/api/subscription', subscriptionRoute);
+app.use('/api/user', userRoute);
 
 app.use((err, _req, res, _next) => {
   console.error('[zidnni] unhandled error:', err);
