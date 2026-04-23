@@ -12,12 +12,14 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const fullPhone = `+222${phone}`;
+
   async function handlePhone(e) {
     e.preventDefault();
     setLoading(true); setError('');
     try {
       const endpoint = isNew ? '/api/auth/register' : '/api/auth/login';
-      const body = isNew ? { phone, name, locale: 'ar' } : { phone };
+      const body = isNew ? { phone: fullPhone, name, locale: 'ar' } : { phone: fullPhone };
       const r = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,7 +39,7 @@ export default function Auth() {
       const r = await fetch('/api/auth/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otp }),
+        body: JSON.stringify({ phone: fullPhone, otp }),
       });
       const data = await r.json();
       if (!data.ok) { setError(data.error); return; }
@@ -63,7 +65,10 @@ export default function Auth() {
             {isNew && (
               <input className="auth-input" type="text" placeholder="الاسم الكامل" value={name} onChange={(e) => setName(e.target.value)} required dir="rtl" />
             )}
-            <input className="auth-input" type="tel" placeholder="+222XXXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} required dir="ltr" />
+            <div className="auth-phone-row">
+              <span className="auth-phone-prefix">🇲🇷 +222</span>
+              <input className="auth-input auth-input--phone" type="tel" placeholder="XXXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} required dir="ltr" />
+            </div>
             {error && <p className="auth-error">{error}</p>}
             <button className="btn btn--primary btn--full" type="submit" disabled={loading}>
               {loading ? '...' : 'إرسال رمز التحقق'}
@@ -71,7 +76,7 @@ export default function Auth() {
           </form>
         ) : (
           <form className="auth-form" onSubmit={handleOtp}>
-            <p className="auth-hint">أدخل رمز التحقق المرسل إلى {phone}</p>
+            <p className="auth-hint">أدخل رمز التحقق المرسل إلى {fullPhone}</p>
             <input className="auth-input auth-input--otp" type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6} placeholder="_ _ _ _" value={otp} onChange={(e) => setOtp(e.target.value)} required dir="ltr" autoFocus />
             {error && <p className="auth-error">{error}</p>}
             <button className="btn btn--primary btn--full" type="submit" disabled={loading}>

@@ -45,6 +45,9 @@ export default function Landing() {
       </header>
 
       <section className="landing__hero">
+        <div className="landing__hero-pattern" aria-hidden="true" />
+        <h1 className="landing__hero-brand">زدني</h1>
+        <p className="landing__hero-ayah">رَبِّ زِدْنِي عِلْمًا</p>
         <h2 className="landing__hero-title">مساعدك الذكي بالعربية أولاً</h2>
         <p className="landing__hero-sub">
           زدني يفهم لهجتك، يخدم احتياجاتك، ويحترم قيمك.

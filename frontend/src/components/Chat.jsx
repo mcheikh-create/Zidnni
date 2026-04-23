@@ -104,7 +104,11 @@ export default function Chat({ conversationId, lang, t }) {
           <Message role="assistant" content={streamingContent} />
         )}
         {streaming && !streamingContent && (
-          <div className="chat__thinking">{t.chat.thinking}</div>
+          <div className="chat__thinking">
+            <span className="chat__thinking-dot" />
+            <span className="chat__thinking-dot" />
+            <span className="chat__thinking-dot" />
+          </div>
         )}
         <div ref={bottomRef} />
       </div>
