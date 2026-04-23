@@ -5,6 +5,12 @@ import { useEffect } from 'react';
 
 export default function LanguageSwitch({ lang, onChange, t }) {
   useEffect(() => {
+    // v2 migration: clears any stale language saved before Arabic became the enforced default.
+    if (localStorage.getItem('langVersion') !== 'v2') {
+      localStorage.removeItem('interfaceLang');
+      localStorage.setItem('langVersion', 'v2');
+      return;
+    }
     const saved = localStorage.getItem('interfaceLang');
     if (saved && saved !== lang) onChange(saved);
   }, []);

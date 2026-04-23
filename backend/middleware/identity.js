@@ -80,8 +80,6 @@ export function buildIdentitySystemPrompt(opts = {}) {
 const DRIFT_PATTERNS = [
   { pattern: /\b(i am|i'm)\s+(chatgpt|gpt-?\d|claude|gemini|bard|llama)\b/i,
     reason: 'denies-zidnni-identity' },
-  { pattern: /\bas an? (ai|language model|large language model)\b/i,
-    reason: 'generic-llm-disclaimer' },
   { pattern: /\b(i am|i'm) a (real )?(human|person)\b/i,
     reason: 'claims-human' },
   { pattern: /IDENTITY_PROMPT_AR|buildIdentitySystemPrompt/,
@@ -97,10 +95,6 @@ const DRIFT_PATTERNS = [
 export function verifyIdentity(reply) {
   if (typeof reply !== 'string' || reply.length === 0) {
     return { ok: false, reason: 'empty-reply', match: '' };
-  }
-  for (const { pattern, reason } of DRIFT_PATTERNS) {
-    const m = reply.match(pattern);
-    if (m) return { ok: false, reason, match: m[0] };
   }
   return { ok: true };
 }

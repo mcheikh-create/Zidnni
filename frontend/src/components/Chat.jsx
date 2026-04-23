@@ -59,6 +59,12 @@ export default function Chat({ conversationId, lang, t }) {
             } else if (currentEvent === "done") {
               let verdict = { ok: true };
               try { verdict = JSON.parse(raw); } catch (_) {}
+              // Capture accumulated NOW before resetting — React 18 batches the
+              // setMessages updater and calls it after accumulated = "" runs,
+              // which would produce an empty message if we close over the variable.
+              const reply = accumulated;
+              accumulated = "";
+              setStreamingContent("");
               if (!verdict.ok) {
                 setMessages((prev) => [
                   ...prev,
@@ -67,11 +73,9 @@ export default function Chat({ conversationId, lang, t }) {
               } else {
                 setMessages((prev) => [
                   ...prev,
-                  { role: "assistant", content: accumulated },
+                  { role: "assistant", content: reply },
                 ]);
               }
-              accumulated = "";
-              setStreamingContent("");
             }
           }
         }
