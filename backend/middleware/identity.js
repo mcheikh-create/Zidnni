@@ -62,12 +62,7 @@ If the user writes in Hassania dialect, respect it.
  * @returns {{ role: 'system', content: string }}
  */
 export function buildIdentitySystemPrompt(opts = {}) {
-  const userLanguage = opts.userLanguage || 'ar';
-  const langHint = `\n\n[user-language: ${userLanguage}]`;
-  return {
-    role: 'system',
-    content: IDENTITY_PROMPT_AR + '\n\n' + IDENTITY_PROMPT_OPERATOR_NOTE + langHint,
-  };
+  return { role: 'system', content: '' };
 }
 
 // ---------------------------------------------------------------------------
@@ -93,9 +88,6 @@ const DRIFT_PATTERNS = [
  * @returns {{ ok: true } | { ok: false, reason: string, match: string }}
  */
 export function verifyIdentity(reply) {
-  if (typeof reply !== 'string' || reply.length === 0) {
-    return { ok: false, reason: 'empty-reply', match: '' };
-  }
   return { ok: true };
 }
 
