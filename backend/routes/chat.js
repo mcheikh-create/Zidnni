@@ -19,8 +19,8 @@
 
 import express from 'express';
 import * as memory from '../services/memory.js';
-import { streamChat } from '../services/qwen.js';
-import { incrementMessages } from '../models/Usage.js';
+import { routeChat } from '../services/llm-router.js';
+import { incrementMessages, getMonthlyUsage } from '../models/Usage.js';
 
 const router = express.Router();
 
@@ -53,9 +53,21 @@ router.post('/', async (req, res) => {
     res.write(`data: ${typeof data === 'string' ? data : JSON.stringify(data)}\n\n`);
   };
 
+  // Determine monthly spend for budget-aware routing (best-effort; 0 on error)
+  let monthlySpendUSD = 0;
+  if (req.user) {
+    try {
+      const usage = getMonthlyUsage(req.user.id);
+      // Rough estimate: 1 message ≈ 500 tokens blended at personal-tier pricing
+      monthlySpendUSD = (usage?.message_count ?? 0) * 0.0004;
+    } catch { /* non-critical */ }
+  }
+
+  const tier = req.user?.tier ?? 'free';
+
   let fullReply = '';
   try {
-    for await (const chunk of streamChat(messages)) {
+    for await (const chunk of routeChat(messages, { tier, monthlySpendUSD })) {
       fullReply += chunk;
       writeEvent('token', chunk);
     }
