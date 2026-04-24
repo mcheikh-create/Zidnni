@@ -45,10 +45,10 @@ const ROUTES = {
     document:    ['ollama'],
   },
   personal: {
-    chat:        ['gpt4o-mini',    'deepseek',        'qwen-dashscope', 'ollama'],
-    translation: ['qwen-dashscope','gpt4o-mini',       'deepseek',       'ollama'],
-    code:        ['deepseek',      'gpt4o-mini',       'ollama'],
-    document:    ['gpt4o-mini',    'deepseek',         'ollama'],
+    chat:        ['deepseek',      'gemini-flash',     'gpt4o-mini',     'qwen-dashscope', 'ollama'],
+    translation: ['qwen-dashscope','deepseek',         'gemini-flash',   'gpt4o-mini',     'ollama'],
+    code:        ['deepseek',      'gpt4o-mini',       'gemini-flash',   'ollama'],
+    document:    ['deepseek',      'gemini-flash',     'gpt4o-mini',     'ollama'],
   },
   business: {
     chat:        ['claude-haiku',  'gpt4o-mini',       'deepseek',       'ollama'],
