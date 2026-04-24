@@ -297,4 +297,69 @@ export async function* routeChat(messages, { tier = 'free', monthlySpendUSD = 0 
   }
 }
 
+// ─── Direct Ollama stream (specific model name) ────────────────────────────
+
+async function* streamOllamaModel(model, messages) {
+  const res = await fetch(`${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, messages, stream: true }),
+  });
+  if (!res.ok || !res.body) throw new Error(`Ollama ${model} responded ${res.status}`);
+
+  const reader  = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer    = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let nl;
+    while ((nl = buffer.indexOf('\n')) >= 0) {
+      const line = buffer.slice(0, nl).trim();
+      buffer = buffer.slice(nl + 1);
+      if (!line) continue;
+      try {
+        const obj   = JSON.parse(line);
+        const chunk = obj?.message?.content ?? '';
+        if (chunk) yield chunk;
+        if (obj.done) return;
+      } catch { /* skip malformed ndjson */ }
+    }
+  }
+}
+
+/**
+ * Test-mode direct route — bypasses tier routing, uses the exact model requested.
+ * Ollama model names are passed through as-is (e.g. "qwen3:8b", "gemma4:26b").
+ * API model IDs match the same keys used in dispatchStream.
+ *
+ * @param {string} model
+ * @param {Array<{role:string, content:string}>} messages
+ * @returns {AsyncIterable<string>}
+ */
+export async function* directRoute(model, messages) {
+  console.info(`[router] direct override → ${model}`);
+
+  // Ollama local models — anything with a colon tag is an Ollama model name
+  if (model.includes(':')) {
+    try {
+      yield* streamOllamaModel(model, messages);
+    } catch (err) {
+      console.warn(`[router] direct ollama ${model} failed: ${err.message}`);
+      throw err;
+    }
+    return;
+  }
+
+  // API models — same IDs as dispatchStream
+  try {
+    yield* dispatchStream(model, messages);
+  } catch (err) {
+    console.warn(`[router] direct ${model} failed (${err.message}) — falling back to ollama`);
+    yield* ollamaStream(messages);
+  }
+}
+
 export { COST_PER_1K };

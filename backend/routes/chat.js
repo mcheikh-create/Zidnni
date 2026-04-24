@@ -19,13 +19,13 @@
 
 import express from 'express';
 import * as memory from '../services/memory.js';
-import { routeChat } from '../services/llm-router.js';
+import { routeChat, directRoute } from '../services/llm-router.js';
 import { incrementMessages, getMonthlyUsage } from '../models/Usage.js';
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-  const { conversationId, message, lang } = req.body ?? {};
+  const { conversationId, message, lang, model } = req.body ?? {};
 
   if (!conversationId || typeof message !== 'string' || message.length === 0) {
     return res
@@ -65,9 +65,14 @@ router.post('/', async (req, res) => {
 
   const tier = req.user?.tier ?? 'free';
 
+  // model field present → test-mode direct override, bypass tier routing
+  const stream = model
+    ? directRoute(model, messages)
+    : routeChat(messages, { tier, monthlySpendUSD });
+
   let fullReply = '';
   try {
-    for await (const chunk of routeChat(messages, { tier, monthlySpendUSD })) {
+    for await (const chunk of stream) {
       fullReply += chunk;
       writeEvent('token', chunk);
     }

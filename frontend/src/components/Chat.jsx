@@ -9,10 +9,21 @@ import { useState, useEffect, useRef } from "react";
 import Message from "./Message.jsx";
 import Input from "./Input.jsx";
 
+const MODEL_OPTIONS = [
+  { value: "auto",        label: "🤖 تلقائي (Auto)",        group: "routing" },
+  { value: "qwen3:8b",    label: "🏠 Qwen3 8b (Local)",      group: "local"   },
+  { value: "qwen3:32b",   label: "🏠 Qwen3 32b (Local)",     group: "local"   },
+  { value: "gemma4:26b",  label: "🟢 Gemma 4 26b (Local)",   group: "local"   },
+  { value: "deepseek",    label: "⚡ DeepSeek V3 (API)",      group: "api"     },
+  { value: "claude-haiku",label: "🧠 Claude Haiku (API)",     group: "api"     },
+  { value: "gemini-flash",label: "🔵 Gemini Flash (API)",     group: "api"     },
+];
+
 export default function Chat({ conversationId, lang, t }) {
   const [messages, setMessages] = useState([]);
   const [streaming, setStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
+  const [selectedModel, setSelectedModel] = useState("auto");
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -30,7 +41,12 @@ export default function Chat({ conversationId, lang, t }) {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ conversationId, message: text, lang }),
+        body: JSON.stringify({
+          conversationId,
+          message: text,
+          lang,
+          ...(selectedModel !== "auto" && { model: selectedModel }),
+        }),
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -93,6 +109,20 @@ export default function Chat({ conversationId, lang, t }) {
 
   return (
     <div className="chat">
+      <div className="chat__model-bar">
+        <span className="chat__test-badge">🧪 Test Mode</span>
+        <select
+          className="chat__model-select"
+          value={selectedModel}
+          onChange={(e) => setSelectedModel(e.target.value)}
+          disabled={streaming}
+          aria-label="Select model"
+        >
+          {MODEL_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
       <div className="chat__messages" role="log" aria-live="polite">
         {messages.length === 0 && !streaming && (
           <p className="chat__empty">{t.chat.empty}</p>
