@@ -69,7 +69,7 @@ const MODELS = [
   {
     id: 'gemini-flash',
     name: 'Gemini 2.0 Flash',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     format: 'gemini',
     baseUrl: 'https://generativelanguage.googleapis.com',
     apiKeyEnv: 'GEMINI_API_KEY',
