@@ -1,0 +1,3 @@
+[submodule "finetune"]
+	path = finetune
+	url = https://github.com/lemneya/hassania-qwen-finetune.git
