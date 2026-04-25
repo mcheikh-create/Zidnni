@@ -1,3 +1,6 @@
 [submodule "finetune"]
 	path = finetune
 	url = https://github.com/lemneya/hassania-qwen-finetune.git
+[submodule "data-pipeline"]
+	path = data-pipeline
+	url = https://github.com/lemneya/hassania-data-pipeline.git
