@@ -108,18 +108,17 @@ Local: ~/Zidnni on Alienware WSL2
   - eval_hassaniya_v2.jsonl: 593 records
 - Baseline dialect_hit_rate: 0.2000 (untuned qwen3:8b)
 
-### Fine-Tuning — BLOCKED, NEEDS ONE FIX
+### Fine-Tuning — IN PROGRESS (resumed from checkpoint-200)
 - Script: ~/Zidnni/finetune/hdrp/pipeline/finetune/qwen_finetune.py
 - Model: Qwen/Qwen2.5-1.5B-Instruct (cached locally, loads in ~2s)
 - Hardware: RTX 5080, 16GB VRAM — PyTorch nightly 2.12.0.dev+cu128 ✅
-- Data: sft_hassaniya_v2.jsonl (10,668 samples)
-- Fix 1 DONE: line 235, tokenizer → processing_class
-- Fix 2 NEEDED: SFTTrainer also rejects dataset_text_field and max_seq_length
-  → Root cause: trl installed version is newer than script
-  → Solution A: pip install trl==0.7.4 --break-system-packages
-  → Solution B: replace TrainingArguments with SFTConfig, remove those args
+- Data: sft_fixed.jsonl (10,668 samples, XML tags stripped)
+- All fixes DONE: SFTConfig API, processing_class, max_length, bf16, resume support
 - LoRA config: rank=16, alpha=32, target all projection layers, 1.18% trainable
-- Estimated training time once running: ~2-3 hours for 1 epoch on RTX 5080
+- Loss curve (first 100 steps): 5.928 → 1.742 (healthy descent)
+- Checkpoint-200 saved at ~/Zidnni/finetune/models/qwen-hassaniya/
+- Log: ~/finetune_resume.log
+- Resume command: python3 qwen_finetune.py --resume-from-checkpoint .../checkpoint-200
 
 ### AutoResearch Engine (~/autoresearch/)
 - night.sh: autonomous loop 11pm–6am, auto-commits on improvement
@@ -158,6 +157,29 @@ Local: ~/Zidnni on Alienware WSL2
 - University of Nouakchott: info@univ-nkc.mr / +222 45 24 40 40
 - ELAR archive: possible existing Hassania recordings
 
+## Sawtak App — Hassania Data Collection Platform
+Repository: https://github.com/mcheikh-create/sawtak-app
+Local: ~/sawtak-app on Alienware WSL2
+Start: cd ~/sawtak-app && npm start (port 4000)
+
+Features:
+- Community voice recording + text contribution (public, no login)
+- Paid annotator system with PIN login + earnings tracking
+- WhatsApp .txt and Facebook .json bulk import
+- HDRP / SFT / DAPT export formats
+- Payment CSV for Bankily/Masrawi transfer
+- 50 prompts seeded across 5 domains (daily life, market, culture, religion, tech)
+- All submissions dual-written to ~/hassania-dataset/raw/community/
+
+Status: Built and pushed. Ready to deploy and share.
+Admin PIN: 1234
+
+## Strategic Insight — Confirmed 2026-04-25
+FLORES-200, NLLB-200, MADAR, Masader: ZERO Hassaniyya data.
+DAH (hassan-IA/dah) is the only public dataset: 3,002 entries.
+Sawtak will create the world's only authentic Hassania dataset.
+This is Zidnni's unassailable competitive moat.
+
 ## Key Decisions Made
 1. qwen3:8b = Zidnni free tier (best local Arabic, beats aya:35b)
 2. DeepSeek V3 = personal tier + Hermes brain (fastest, cheapest)
@@ -166,7 +188,8 @@ Local: ~/Zidnni on Alienware WSL2
 5. Identity filter disabled until fine-tune gives Zidnni its identity
 6. Open WebUI = admin testing tool only (not user-facing)
 7. Fine-tune on Alienware RTX 5080 now, Mac Studio MLX later
-8. trl must be pinned to 0.7.4 OR script updated to use SFTConfig API
+8. trl 1.2.0 + SFTConfig API is the correct approach (trl==0.7.4 is abandoned)
+9. Sawtak = primary Hassania data acquisition engine going forward
 
 ## How to Start a New Claude Session
 1. Share this CLAUDE.md with Claude at the start of every conversation
