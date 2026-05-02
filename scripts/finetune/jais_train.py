@@ -210,7 +210,6 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(
         config['model_id'],
         quantization_config=bnb_config,
-        device_map="auto",
         trust_remote_code=True,
     )
     
