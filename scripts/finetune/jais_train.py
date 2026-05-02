@@ -18,6 +18,16 @@ import json
 import argparse
 from pathlib import Path
 
+NORMALIZER_PATH = '/home/mohiy/hassania-dataset/models/hassaniya-normaliser/src'
+try:
+    import sys as _sys
+    _sys.path.insert(0, NORMALIZER_PATH)
+    from hassy_normalizer.normalizer import normalize_text as _normalize_text
+    _normalize = _normalize_text
+    print('hassy_normalizer loaded')
+except Exception:
+    _normalize = lambda t: t
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Fine-tune Jais on Hassaniya data")
     parser.add_argument("--model", type=str, default="jais-13b",
@@ -100,7 +110,8 @@ def convert_to_jais_format(input_file: str, output_file: str):
                         assistant_msg = msg['content']
                 
                 if user_msg and assistant_msg:
-                    # Create Jais formatted training example
+                    user_msg = _normalize(user_msg)
+                    assistant_msg = _normalize(assistant_msg)
                     jais_prompt = format_jais_prompt(user_msg, assistant_msg)
                     converted.append({"text": jais_prompt})
                     
@@ -165,7 +176,7 @@ def main():
     data_dir = Path(args.data_dir)
     
     # Find training data
-    train_file = data_dir / "final_unified_train.jsonl"
+    train_file = data_dir / "jais_train_final.jsonl"
     if not train_file.exists():
         print(f"\nError: Training data not found at {train_file}")
         sys.exit(1)
