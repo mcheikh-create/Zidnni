@@ -26,12 +26,18 @@ NORMALIZER_PATH = '/home/mohiy/hassania-dataset/models/hassaniya-normaliser/src'
 import transformers.modeling_utils as _t_mu
 _orig_dispatch_model = _t_mu.dispatch_model
 def _patched_dispatch_model(model, device_map, **kwargs):
-    if len(set(device_map.values())) == 1 and (
-        getattr(model, 'is_loaded_in_4bit', False) or
-        getattr(model, 'is_loaded_in_8bit', False)
-    ):
-        model.hf_device_map = dict(device_map)
-        return model
+    if len(set(device_map.values())) == 1:
+        try:
+            import bitsandbytes.nn as _bnb_nn
+            _is_bnb = any(
+                isinstance(m, (_bnb_nn.Linear4bit, _bnb_nn.Linear8bitLt))
+                for m in model.modules()
+            )
+        except Exception:
+            _is_bnb = False
+        if _is_bnb or getattr(model, 'is_loaded_in_4bit', False) or getattr(model, 'is_loaded_in_8bit', False):
+            model.hf_device_map = dict(device_map)
+            return model
     return _orig_dispatch_model(model, device_map=device_map, **kwargs)
 _t_mu.dispatch_model = _patched_dispatch_model
 try:
