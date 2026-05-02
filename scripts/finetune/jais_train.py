@@ -37,6 +37,11 @@ def _patched_dispatch_model(model, device_map, **kwargs):
             _is_bnb = False
         if _is_bnb or getattr(model, 'is_loaded_in_4bit', False) or getattr(model, 'is_loaded_in_8bit', False):
             model.hf_device_map = dict(device_map)
+            # Move non-quantized buffers (causal mask, etc.) to target device
+            target = list(device_map.values())[0]
+            for buf in model.buffers():
+                if buf is not None and buf.device.type == 'cpu':
+                    buf.data = buf.data.to(target)
             return model
     return _orig_dispatch_model(model, device_map=device_map, **kwargs)
 _t_mu.dispatch_model = _patched_dispatch_model
