@@ -19,6 +19,21 @@ import argparse
 from pathlib import Path
 
 NORMALIZER_PATH = '/home/mohiy/hassania-dataset/models/hassaniya-normaliser/src'
+
+# Patch accelerate dispatch_model: skip .to() for already-quantized 4/8-bit models.
+# accelerate's single-device shortcut calls model.to(device) which bitsandbytes forbids.
+import accelerate.big_modeling as _accel_bm
+_orig_dispatch_model = _accel_bm.dispatch_model
+def _patched_dispatch_model(model, device_map, **kwargs):
+    devices = set(device_map.values())
+    if len(devices) == 1 and (
+        getattr(model, 'is_loaded_in_4bit', False) or
+        getattr(model, 'is_loaded_in_8bit', False)
+    ):
+        model.hf_device_map = dict(device_map)
+        return model
+    return _orig_dispatch_model(model, device_map=device_map, **kwargs)
+_accel_bm.dispatch_model = _patched_dispatch_model
 try:
     import sys as _sys
     _sys.path.insert(0, NORMALIZER_PATH)
