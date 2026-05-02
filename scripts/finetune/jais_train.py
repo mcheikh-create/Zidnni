@@ -56,7 +56,7 @@ def parse_args():
 # Model configurations
 MODEL_CONFIGS = {
     "jais-13b": {
-        "model_id": "inceptionai/jais-13b-chat",
+        "model_id": "/home/mohiy/hassania-dataset/models/jais-13b",
         "vram_required": "~10GB with QLoRA",
         "recommended_batch": 2,
     },
@@ -181,12 +181,10 @@ def main():
         print(f"\nError: Training data not found at {train_file}")
         sys.exit(1)
     
-    # Convert to Jais format
-    jais_data_dir = Path("/home/mohiy/hassania-dataset")
-    jais_data_dir.mkdir(parents=True, exist_ok=True)
-    
-    jais_train_file = jais_data_dir / "jais_train.jsonl"
-    num_examples = convert_to_jais_format(str(train_file), str(jais_train_file))
+    # Dataset already formatted as Jais text field — use directly
+    jais_train_file = train_file
+    num_examples = sum(1 for _ in open(str(train_file)))
+    print(f"Using pre-formatted dataset: {num_examples} examples")
     
     print(f"\nLoading model: {config['model_id']}")
     print("This may take several minutes...")
