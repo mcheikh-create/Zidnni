@@ -285,7 +285,7 @@ def main():
         num_train_epochs=args.epochs,
         per_device_train_batch_size=args.batch_size,
         per_device_eval_batch_size=args.batch_size,
-        gradient_accumulation_steps=4,
+        gradient_accumulation_steps=2,
         learning_rate=args.lr,
         weight_decay=0.01,
         warmup_ratio=0.1,
